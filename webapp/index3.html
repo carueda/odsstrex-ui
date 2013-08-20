@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <title>odss planning component -- experimental</title>
+
+    <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js' charset="utf-8"></script>
+
+    <script src="links/timeline.js"></script>
+
+    <script src='common.js' charset="utf-8"></script>
+    <script src='app3.js' charset="utf-8"></script>
+
+    <link rel='stylesheet' type='text/css' href='links/timeline.css'>
+    <link rel='stylesheet' type='text/css' href='app.css'>
+
+    <style type="text/css">
+        body {
+        font-size: 8pt;
+        font-family: verdana, sans, arial, sans-serif;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<div style="width:100%; text-align:center">
+    <button class="graybutton" id="refresh">Refresh</button>
+    <button class="graybutton" id="save_draft_goals">Save draft goals</button>
+    <button class="graybutton" id="submitGoals">Submit goals</button>
+    <button class="graybutton" id="remove_draft">remove drafts</button>
+    <button class="graybutton" id="remove_pending">remove pending</button>
+    <button class="graybutton">Publish</button>
+</div>
+
+<div id="timelines"></div>
+
+<div style="color: gray; width:100%; text-align:center">
+    <i>internal:</i>
+    <button class="graybutton" id="redraw">redraw</button>
+</div>
+
+<div id="info"></div>
+
+</body>

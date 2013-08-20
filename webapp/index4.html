@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <title>odss planning component -- experimental</title>
+
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js' charset="utf-8"></script>
+    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+
+    <script src="moment.js"></script>
+    <script src="links/timeline.js"></script>
+
+    <script src='common.js' charset="utf-8"></script>
+    <script src='app4.js' charset="utf-8"></script>
+
+    <link rel='stylesheet' type='text/css' href='links/timeline.css'>
+    <link rel='stylesheet' type='text/css' href='app.css'>
+
+    <style type="text/css">
+        body {
+        font-size: 8pt;
+        font-family: verdana, sans, arial, sans-serif;
+        }
+
+
+    input.text { margin-bottom:12px;  padding: .4em; font-size: 10px;}
+    fieldset { padding:0; border:0; margin-top:10px; }
+    div#users-contain { width: 350px; margin: 20px 0; }
+    div#users-contain table { margin: 1em 0; border-collapse: collapse; width: 100%; }
+    div#users-contain table td, div#users-contain table th { border: 1px solid #eee; padding: .6em 10px; text-align: left; }
+    .ui-dialog .ui-state-error { padding: .3em; }
+    .validateTips { border: 1px solid transparent; padding: 0.3em; }
+
+
+    </style>
+
+</head>
+
+<body>
+
+<div style="width:100%; text-align:center">
+    <button class="graybutton" id="refresh">Refresh</button>
+    <button class="graybutton" id="save_draft_goals">Save</button>
+    <button class="graybutton" id="submitGoals">Submit</button>
+    <button class="graybutton" id="remove_draft">Remove drafts</button>
+    <button class="graybutton" id="remove_pending">Remove pending</button>
+    <!--<button class="graybutton">Publish</button>-->
+</div>
+
+<div id="timelines"></div>
+
+<div style="color: gray; width:100%; text-align:center">
+    <i>internal:</i>
+    <button class="graybutton" id="redraw">redraw</button>
+    <button class="graybutton" id="removeAll">removeAll</button>
+</div>
+
+<div id="status" style="background-color: lightyellow;
+position:absolute; left:10px; top:10px;">
+</div>
+
+<div id="error" style="background-color: lightcoral">
+</div>
+
+
+<div id="token-form" title="Token">
+  <form>
+  <fieldset>
+
+      <table>
+        <tbody>
+        <tr>
+
+        <td colspan="3">
+            <div style="text-align: center">
+                <label for="predicate">Predicate</label>
+                <input type="text" name="predicate" id="predicate" class="text ui-widget-content ui-corner-all"/>
+                <label for="on_timeline">on timeline</label>
+                <input id="on_timeline" class="text ui-widget-content ui-corner-all" readonly/>
+
+            </div>
+        </td>
+
+        </tr>
+
+        <tr>
+
+        <td>
+
+          <table class="token-form">
+            <tbody>
+
+            <tr>
+            <td colspan="2"> <div style="text-align: center; font-weight: bold"> Start date</div> </td> </tr>
+
+            <tr>
+            <td><label for="early_start">Minimum</label></td>
+            <td><input type="text" name="early_start" id="early_start" class="text ui-widget-content ui-corner-all"
+                    /></td>
+            </tr>
+
+            <tr>
+            <td><label for="late_start">Maximum</label></td>
+            <td><input type="text" name="late_start" id="late_start" class="text ui-widget-content ui-corner-all"
+                    /></td>
+            </tr>
+
+            <tr>
+            <td><label for="fixed_start">Fixed</label></td>
+            <td><input type="text" name="fixed_start" id="fixed_start" value="" class="text ui-widget-content ui-corner-all"
+                    /></td>
+            </tr>
+            </tbody>
+          </table>
+
+        </td>
+
+
+        <td>
+
+          <table class="token-form">
+            <tbody>
+
+            <tr>
+            <td colspan="2"> <div style="text-align: center; font-weight: bold">Duration</div> </td>
+            </tr>
+
+            <tr>
+            <td><label for="duration_min">Minimum</label></td>
+            <td><input type="text" name="duration_min" id="duration_min" class="text ui-widget-content ui-corner-all"
+                    /></td>
+            </tr>
+
+            <tr>
+            <td><label for="duration_max">Maximum</label></td>
+            <td><input type="text" name="duration_max" id="duration_max" class="text ui-widget-content ui-corner-all"
+                    /></td>
+            </tr>
+
+            <tr>
+            <td><label for="duration_fixed">Fixed</label></td>
+            <td><input type="text" name="duration_fixed" id="duration_fixed" value="" class="text ui-widget-content ui-corner-all"
+                    /></td>
+            </tr>
+            </tbody>
+          </table>
+
+        </td>
+
+
+        <td>
+
+          <table class="token-form">
+            <tbody>
+
+            <tr>
+            <td colspan="2"> <div style="text-align: center; font-weight: bold">End date</div> </td>
+            </tr>
+
+            <tr>
+            <td><label for="early_end">Minimum</label></td>
+            <td><input type="text" name="early_end" id="early_end" class="text ui-widget-content ui-corner-all"
+                    /></td>
+            </tr>
+
+            <tr>
+            <td><label for="late_end">Maximum</label></td>
+            <td><input type="text" name="late_end" id="late_end" class="text ui-widget-content ui-corner-all"
+                    /></td>
+            </tr>
+
+            <tr>
+            <td><label for="fixed_end">Fixed</label></td>
+            <td><input type="text" name="fixed_end" id="fixed_end" value="" class="text ui-widget-content ui-corner-all"
+                    /></td>
+            </tr>
+            </tbody>
+          </table>
+
+        </td>
+
+
+
+        </tr>
+
+
+        </tbody>
+      </table>
+
+
+
+  </fieldset>
+  </form>
+</div>
+
+
+</body>

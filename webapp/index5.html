@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <title>odss planning component -- experimental</title>
+
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js' charset="utf-8"></script>
+    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+
+    <script src="vendor/jquery-ui-timepicker-addon.js"></script>
+    <link rel='stylesheet' type='text/css' href='vendor/jquery-ui-timepicker-addon.css'>
+
+    <script src="vendor/moment.js"></script>
+    <script src="vendor/links/timeline.js"></script>
+
+    <script src='common.js' charset="utf-8"></script>
+    <script src='tokenform.js' charset="utf-8"></script>
+    <script src='assert.js' charset="utf-8"></script>
+    <script src='timelinewidget.js' charset="utf-8"></script>
+    <script src='app5.js' charset="utf-8"></script>
+
+    <link rel='stylesheet' type='text/css' href='vendor/links/timeline.css'>
+    <link rel='stylesheet' type='text/css' href='app5.css'>
+
+    <style type="text/css">
+        body {
+        font-size: 8pt;
+        font-family: verdana, sans, arial, sans-serif;
+        }
+
+
+    input.text {
+        margin-bottom:12px;  padding: .4em; font-size: 10px;
+    	/*width: 160px;*/
+    }
+
+    fieldset { padding:0; border:0; margin-top:10px; }
+    div#users-contain { width: 350px; margin: 20px 0; }
+    div#users-contain table { margin: 1em 0; border-collapse: collapse; width: 100%; }
+    div#users-contain table td, div#users-contain table th { border: 1px solid #eee; padding: .6em 10px; text-align: left; }
+    .ui-dialog .ui-state-error { padding: .3em; }
+    .validateTips { border: 1px solid transparent; padding: 0.3em; }
+
+
+    </style>
+
+</head>
+
+<body>
+
+<div style="width:100%; text-align:center">
+    <button class="graybutton" id="refresh">Refresh</button>
+    <button class="graybutton" id="save_draft_goals">Save</button>
+    <button class="graybutton" id="submitGoals">Submit</button>
+    <button class="graybutton" id="remove_draft">Remove drafts</button>
+    <button class="graybutton" id="remove_pending">Remove pending</button>
+    <!--<button class="graybutton">Publish</button>-->
+</div>
+
+<div id="timelines"></div>
+
+<div style="color: gray; width:100%; text-align:center">
+    <i>internal:</i>
+    <button class="graybutton" id="redraw">redraw</button>
+    <button class="graybutton" id="removeAll">removeAll</button>
+    <button class="graybutton" id="timer">startTimer</button>
+    <label for="timerInterval">Interval:</label>
+    <input type="text" id="timerInterval" value="30" size="4"/>sec
+</div>
+
+<div id="status" style="background-color: lightyellow;
+position:absolute; left:10px; top:10px;">
+</div>
+
+<div id="error" style="background-color: lightcoral; color: white">
+</div>
+
+
+<div id="token-form" title="Token">
+  <form>
+  <fieldset>
+
+      <table>
+        <tbody>
+        <tr>
+
+        <td colspan="3">
+            <div style="text-align: center">
+                <label for="predicate">Predicate:</label>
+                <select type="text" name="predicate" id="predicate"
+                        class="text ui-widget-content ui-corner-all">
+                    <option>None</option>
+                    <option>Track</option>
+                </select>
+                <label for="on_timeline">on timeline:</label>
+                <input id="on_timeline" class="text ui-widget-content ui-corner-all" readonly/>
+
+            </div>
+        </td>
+
+        </tr>
+
+        <tr id="track-section" style="visibility: hidden">
+
+        <td colspan="3">
+
+          <table class="token-form" width="100%">
+            <tbody>
+
+            <tr>
+                <td>
+                <label for="follow">Follow:</label>
+                <select name="follow" id="follow"
+                        class="text ui-widget-content ui-corner-all">
+                    <option>wgTex</option>
+                    <option>stella104</option>
+                    <option>stella109</option>
+                </select>
+
+                </td>
+                <td>
+
+                <label for="lagrangian">Lagrangian:</label>
+                <input type="checkbox" name="lagrangian" id="lagrangian" />
+
+                </td>
+                <td>
+
+                <label for="path">Shape:</label>
+                <select name="path" id="path"
+                        class="text ui-widget-content ui-corner-all">
+                    <option>chaffey</option>
+                    <option>square</option>
+                    <option>goto</option>
+                    <option>bowtie</option>
+                </select>
+
+                </td>
+                <td>
+
+                <label for="size">Size:</label>
+                <input type="text" name="size" id="size" class="text ui-widget-content ui-corner-all"
+                    size="10"/>m
+                </td>
+            </tr>
+
+            </tbody>
+          </table>
+
+        </td>
+
+        </tr>
+
+
+        <tr>
+
+        <td>
+
+          <table class="token-form">
+            <tbody>
+
+            <tr>
+            <td colspan="2"> <div style="text-align: center; font-weight: bold"> Start date</div> </td> </tr>
+
+            <tr>
+            <td><label for="start_min">Minimum:</label></td>
+            <td><input type="text" name="start_min" id="start_min" class="text ui-widget-content ui-corner-all"
+                    /></td>
+            </tr>
+
+            <tr>
+            <td><label for="start_max">Maximum:</label></td>
+            <td><input type="text" name="start_max" id="start_max" class="text ui-widget-content ui-corner-all"
+                    /></td>
+            </tr>
+
+            <tr>
+            <td><label for="start_val">Value:</label></td>
+            <td><input type="text" name="start_val" id="start_val" value="" class="text ui-widget-content ui-corner-all"
+                    /></td>
+            </tr>
+            </tbody>
+          </table>
+
+        </td>
+
+
+        <td>
+
+          <table class="token-form">
+            <tbody>
+
+            <tr>
+            <td colspan="2"> <div style="text-align: center; font-weight: bold">Duration</div> </td>
+            </tr>
+
+            <tr>
+            <td><label for="duration_min">Minimum:</label></td>
+            <td><input type="text" name="duration_min" id="duration_min" class="text ui-widget-content ui-corner-all"
+                    /></td>
+            </tr>
+
+            <tr>
+            <td><label for="duration_max">Maximum:</label></td>
+            <td><input type="text" name="duration_max" id="duration_max" class="text ui-widget-content ui-corner-all"
+                    /></td>
+            </tr>
+
+            <tr>
+            <td><label for="duration_val">Value:</label></td>
+            <td><input type="text" name="duration_val" id="duration_val" value="" class="text ui-widget-content ui-corner-all"
+                    /></td>
+            </tr>
+            </tbody>
+          </table>
+
+        </td>
+
+
+        <td>
+
+          <table class="token-form">
+            <tbody>
+
+            <tr>
+            <td colspan="2"> <div style="text-align: center; font-weight: bold">End date</div> </td>
+            </tr>
+
+            <tr>
+            <td><label for="end_min">Minimum:</label></td>
+            <td><input type="text" name="end_min" id="end_min" class="text ui-widget-content ui-corner-all"
+                    /></td>
+            </tr>
+
+            <tr>
+            <td><label for="end_max">Maximum:</label></td>
+            <td><input type="text" name="end_max" id="end_max" class="text ui-widget-content ui-corner-all"
+                    /></td>
+            </tr>
+
+            <tr>
+            <td><label for="end_val">Value:</label></td>
+            <td><input type="text" name="end_val" id="end_val" value="" class="text ui-widget-content ui-corner-all"
+                    /></td>
+            </tr>
+            </tbody>
+          </table>
+
+        </td>
+
+
+
+        </tr>
+
+
+        </tbody>
+      </table>
+
+
+
+  </fieldset>
+  </form>
+</div>
+
+
+</body>

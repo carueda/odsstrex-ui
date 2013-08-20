@@ -1,0 +1,374 @@
+$(document).ready(function() {
+
+    refresh_sched_info({
+        from: "2013-04-25 00:00",
+        to:   "2013-05-25 00:00"
+    });
+});
+
+function refresh_sched_info(req) {
+    console.log("refresh_sched_info: " + JSON.stringify(req));
+    $.ajax({
+        dataType: "json",
+        url: "tokens",
+        data: req,
+
+        success: function(res) {
+            got_sched_info(req, res);
+        },
+
+        error: function (xhr, ajaxOptions, thrownError) {
+            console.log("error: " + thrownError);
+        }
+    });
+}
+
+function got_sched_info(req, res) {
+    console.log("retrieved tokens res = " + JSON.stringify(res));
+
+    var sections = res.sections;
+    var tokens   = res.tokens;
+
+    var sectionsDict = {};
+    for (var s = 0; s < sections.length; s++) {
+        var section = sections[s];
+        sectionsDict[section.key] = {'group': section.label, count: 0};
+    }
+
+    var tokenInfos = [];
+
+    for (var i = 0; i < tokens.length; i++) {
+        var token = tokens[i];
+
+        sectionsDict[token.section_id].count += 1;
+
+        tokenInfos.push({
+            'early_start' : parseDate(token.early_start),
+            'late_start'  : parseDate(token.late_start),
+            'early_end'   : parseDate(token.early_end),
+            'late_end'    : parseDate(token.late_end),
+            'content'     : token.text,
+            'group'       : sectionsDict[token.section_id].group
+        });
+    }
+
+
+    function drawTimeline(data, container, showAxisLabels) {
+        // specify options
+        var options = {
+            'width':            '99%',
+            'height':           'auto',
+            'editable':         true,
+            'style':            'box',
+            'snapEvents':       false,
+            'eventMargin':      8,
+            'eventMarginAxis':  8,
+            //'showNavigation':   true,
+            //'showButtonNew':    true,
+            'showMajorLabels':  showAxisLabels,
+            'showMinorLabels':  showAxisLabels,
+            'axisOnTop':        true,
+            'groupsChangeable': false
+            //'groupsOnRight':    true,
+//            'showCustomTime':    true
+        };
+
+        // Instantiate our timeline object.
+        var timeline = new links.Timeline(container);
+
+        // Draw our timeline with the created data and options
+        timeline.draw(data, options);
+
+        function getSelectedRow() {
+            var row = undefined;
+            var sel = timeline.getSelection();
+            if (sel.length) {
+                if (sel[0].row != undefined) {
+                    row = sel[0].row;
+                }
+            }
+            return row;
+        }
+
+        var onEdit = function(event) {
+            //console.log("onEdit: " + JSON.stringify(event));
+            var row = getSelectedRow();
+            var element = data[row];
+            console.log("data[" + row + "] = " + JSON.stringify(element));
+
+            var index = element.tokenInfo.index;
+            var kind  = element.tokenInfo.kind;
+            if (kind !== "body") {
+                timeline.cancelChange();
+                return;
+            }
+
+            var content = strip(data[row].content);
+            var newContent = prompt("Enter content\n", content);
+            if (newContent != undefined) {
+                data[row].content = newContent;
+                timeline.redraw();
+            }
+        };
+
+        links.events.addListener(timeline, 'edit', onEdit);
+
+        var onAdd = function(event) {
+            console.log("add disabled for the moment");
+            timeline.cancelAdd();
+        };
+
+        links.events.addListener(timeline, 'add', onAdd);
+
+        var onSelect = function(event) {
+            var row = getSelectedRow();
+            var element = data[row];
+            console.log("onSelect: " + JSON.stringify(element));
+        };
+
+        links.events.addListener(timeline, 'select', onSelect);
+
+        var onChange = function(event) {
+
+            var originalDiff, newDiff, diffDiff, delta;
+
+            var row = getSelectedRow();
+            var element = data[row];
+            console.log("data[row] = " + JSON.stringify(element));
+
+            var index = element.tokenInfo.index;
+            var kind  = element.tokenInfo.kind;
+            var tokenInfo = tokenInfos[index];
+
+            console.log("tokenInfo: " + JSON.stringify(tokenInfo));
+
+            var bgBlock    = data[4 * index + 0];
+            var startBlock = data[4 * index + 1];
+            var bodyBlock  = data[4 * index + 2];
+            var endBlock   = data[4 * index + 3];
+
+            console.log("bgBlock:    " + JSON.stringify(bgBlock));
+            console.log("startBlock: " + JSON.stringify(startBlock));
+            console.log("bodyBlock:  " + JSON.stringify(bodyBlock));
+            console.log("endBlock:   " + JSON.stringify(endBlock));
+
+            if (kind === "start") {
+                originalDiff = tokenInfo.late_start - tokenInfo.early_start;
+                newDiff = startBlock.end - startBlock.start;
+                diffDiff = Math.abs(originalDiff - newDiff);
+                console.log("diffDiff = " + diffDiff);
+
+                if (diffDiff == 0) {
+                    // start block was just shifted.
+                    // move the other blocks in the same shifted amount
+
+                    delta = startBlock.end - tokenInfo.late_start;
+                    console.log("delta: " + delta);
+
+                    bodyBlock.start = new Date(bodyBlock.start.valueOf() + delta);
+                    bodyBlock.end   = new Date(bodyBlock.end.valueOf() + delta);
+
+                    endBlock.start = new Date(endBlock.start.valueOf() + delta);
+                    endBlock.end   = new Date(endBlock.end.valueOf() + delta);
+                }
+                else {
+                    // start block has changed its time span
+
+                    if (startBlock.end > bodyBlock.end) {
+                        timeline.cancelChange();
+                        return;
+                    }
+                    bodyBlock.start = new Date(startBlock.end.valueOf());
+                }
+            }
+            else if (kind === "body") {
+                originalDiff = tokenInfo.early_end - tokenInfo.late_start;
+                newDiff = bodyBlock.end - bodyBlock.start;
+                diffDiff = Math.abs(originalDiff - newDiff);
+                console.log("diffDiff = " + diffDiff);
+
+                if (diffDiff == 0) {
+                    // body block was just shifted.
+                    // move the other blocks in the same shifted amount
+
+                    delta = bodyBlock.end - tokenInfo.early_end;
+                    console.log("delta: " + delta);
+
+                    startBlock.start = new Date(startBlock.start.valueOf() + delta);
+                    startBlock.end   = new Date(startBlock.end.valueOf() + delta);
+
+                    endBlock.start = new Date(endBlock.start.valueOf() + delta);
+                    endBlock.end   = new Date(endBlock.end.valueOf() + delta);
+
+                }
+                else {
+                    // body block has changed its time span
+
+                    if (bodyBlock.start < startBlock.start) {
+                        timeline.cancelChange();
+                        return;
+                    }
+                    if (bodyBlock.end > endBlock.end) {
+                        timeline.cancelChange();
+                        return;
+                    }
+                    startBlock.end  = new Date(bodyBlock.start.valueOf());
+                    endBlock.start = new Date(bodyBlock.end.valueOf());
+                }
+            }
+            else if (kind === "end") {
+                originalDiff = tokenInfo.late_end - tokenInfo.early_end;
+                newDiff = endBlock.end - endBlock.start;
+                diffDiff = Math.abs(originalDiff - newDiff);
+                console.log("diffDiff = " + diffDiff);
+
+                if (diffDiff == 0) {
+                    // end block was just shifted.
+                    // move the other blocks in the same shifted amount
+
+                    delta = endBlock.end - tokenInfo.late_end;
+                    console.log("delta: " + delta);
+
+                    startBlock.start = new Date(startBlock.start.valueOf() + delta);
+                    startBlock.end   = new Date(startBlock.end.valueOf() + delta);
+
+                    bodyBlock.start = new Date(bodyBlock.start.valueOf() + delta);
+                    bodyBlock.end   = new Date(bodyBlock.end.valueOf() + delta);
+
+                }
+                else {
+                    // end block has changed its time span
+
+                    if (endBlock.start < bodyBlock.start) {
+                        timeline.cancelChange();
+                        return;
+                    }
+                    bodyBlock.end = new Date(endBlock.start.valueOf());
+                }
+            }
+
+            // update tokenInfo:
+            tokenInfo.early_start = startBlock.start;
+            tokenInfo.late_start  = startBlock.end;
+            tokenInfo.early_end   = bodyBlock.end;
+            tokenInfo.late_end    = endBlock.end;
+
+            bgBlock.start = new Date(startBlock.start.valueOf());
+            bgBlock.end   = new Date(endBlock.end.valueOf());
+
+            timeline.redraw();
+
+        };
+
+        links.events.addListener(timeline, 'change', onChange);
+
+        return timeline;
+    }
+
+    var timeline_id = "timelines";
+
+    var data = [];
+    for (var index = 0; index < tokenInfos.length; index++) {
+        var tokenInfo = tokenInfos[index];
+
+        var start = {
+            'start':      tokenInfo.early_start,
+            'end':        tokenInfo.late_start,
+            'content':    "start",
+            'group':      tokenInfo.group,
+            //'className':  'green',
+            'tokenInfo':  {'kind': 'start', 'index': index}
+        };
+
+        var body = {
+            'start':      tokenInfo.late_start,
+            'end':        tokenInfo.early_end,
+            'content':    tokenInfo.content,
+            'group':      tokenInfo.group,
+            'tokenInfo':  {'kind': 'body', 'index': index}
+        };
+
+        var end = {
+            'start':      tokenInfo.early_end,
+            'end':        tokenInfo.late_end,
+            'content':    "end",
+            'group':      tokenInfo.group,
+            //'className':  'green',
+            'tokenInfo':  {'kind': 'end', 'index': index}
+        };
+
+        var background = {
+            'start':      tokenInfo.early_start,
+            'end':        tokenInfo.late_end,
+            'content':    "",
+            'group':      tokenInfo.group,
+            'className':  'backgroud-block',
+            'tokenInfo':  {'kind': 'background', 'index': index}
+        };
+
+        // push the 4 blocks associated to each token:
+        data.push(background);
+        data.push(start);
+        data.push(body);
+        data.push(end);
+
+    }
+
+    // add dummy element for each section without any tokens, so the section
+    // shows up in the interface:
+    for (var s = 0; s < sections.length; s++) {
+        var section = sections[s];
+        var sectionInfo = sectionsDict[section.key];
+        if (sectionInfo.count == 0) {
+            // timeline should provide an addGroup method.
+            // for now, seems like the following dummy event makes the trick
+            data.push({
+//                'start':      tokenInfo.late_start,
+//                'end':        tokenInfo.early_end,
+                'content':    "dummy",
+                'group':      sectionInfo.group
+                //'tokenInfo':  {'kind': 'body', 'index': index}
+            });
+        }
+    }
+
+
+
+    var container = document.getElementById(timeline_id);
+    var timeline = drawTimeline(data, container, true);
+
+    // add groups without tokens:
+    for (var s = 0; s < sections.length; s++) {
+        var sectionInfo = sectionsDict[sections[s].key];
+        if (sectionInfo.count == 0) {
+            // Is timeline.getGroup a stable API operation to create a group?
+            timeline.getGroup(sectionInfo.group);
+            console.log("Added empty group: " + sectionInfo.group);
+        }
+    }
+
+    $(window).bind('resize', function() {
+        timeline.redraw();
+    });
+
+    timeline.setVisibleChartRange(parseDate(req.from), parseDate(req.to), true);
+
+}
+
+function strip(html) {
+    var tmp = document.createElement("DIV");
+    tmp.innerHTML = html;
+    return tmp.textContent||tmp.innerText;
+}
+
+
+function parseDate(str) {
+    // format: "2013-03-08 00:00"
+    return new Date(
+        parseInt(str.substr(0, 4), 10),      // year
+        parseInt(str.substr(5, 2), 10) - 1,  // month
+        parseInt(str.substr(8, 2), 10),      // day
+        parseInt(str.substr(11, 2), 10),     // hour
+        parseInt(str.substr(14, 2), 10)      // mm
+    );
+}

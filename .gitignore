@@ -1,0 +1,29 @@
+odsstrex.conf
+
+.DS_Store
+.idea
+.idea_modules
+.classpath
+.project
+/.lib/
+*~
+*.eml
+*.iml
+*.ipr
+*.iws
+.*.sw?
+.cache
+*.class
+*.log
+
+# sbt specific
+dist/*
+target/
+lib_managed/
+src_managed/
+project/boot/
+project/build/target/
+project/plugins/project/
+
+# Scala-IDE specific
+.scala_dependencies
