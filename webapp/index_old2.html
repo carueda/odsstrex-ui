@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <title>odss planning component -- experimental</title>
+
+    <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js' charset="utf-8"></script>
+
+    <script src='codebase/dhtmlxscheduler.js' charset="utf-8"></script>
+    <script src='codebase/ext/dhtmlxscheduler_timeline.js' charset="utf-8"></script>
+    <!--<script src="codebase/ext/dhtmlxscheduler_collision.js"></script>-->
+    <script src='app.js' charset="utf-8"></script>
+
+    <link rel='stylesheet' type='text/css' href='codebase/dhtmlxscheduler_glossy.css'>
+    <link rel='stylesheet' type='text/css' href='app.css'>
+
+</head>
+<body>
+
+<div id="scheduler_here" class="dhx_cal_container" style='width:100%; height:176px;'>
+    <div class="dhx_cal_navline">
+        <div class="dhx_cal_prev_button">&nbsp;</div>
+        <div class="dhx_cal_next_button">&nbsp;</div>
+        <div class="dhx_cal_today_button"></div>
+        <div class="dhx_cal_date"></div>
+        <div class="dhx_cal_tab" name="day_tab" style="right:204px;"></div>
+        <div class="dhx_cal_tab" name="week_tab" style="right:140px;"></div>
+        <div class="dhx_cal_tab" name="timeline_tab" style="right:280px;"></div>
+        <div class="dhx_cal_tab" name="month_tab" style="right:76px;"></div>
+    </div>
+    <div class="dhx_cal_header">
+    </div>
+    <div class="dhx_cal_data">
+    </div>
+
+
+</div>
+<div style="width:100%; text-align:center">
+<button class="graybutton">Submit</button>
+<button class="graybutton">Save</button>
+<button class="graybutton">Publish</button>
+</div>
+ <!--<i>see if the needed buttons could be placed in the header section above</i>-->
+
+<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+
+<br/>
+<hr/>
+
+<div>
+    <i>note: all of this is preliminary.</i>
+
+    <br/>
+    <ul>
+        <li>
+            To add a new goal: on an empty region, double click (a dialog will appear)
+            or click and drag to indicate the range for the goal (and a dialog will appear
+            to enter more information).
+        </li>
+
+        <li>
+            To remove a goal: double click the event and select Delete in the dialog
+            that appears.
+        </li>
+
+    </ul>
+</div>
+
+<div>
+    <b>some devel notes</b>:
+    <br/>
+    <br/>
+
+    Functionality is still preliminary and currently focused on the
+    interface composition and user interaction capabilities.
+    Although data is already coming from a back-end servlet, it is still fake data.
+    Not yet connection with T-REX endpoint in the back-end.
+    <ul>
+        <li>
+            As can be noted the component is currently isolated from the ODSS interface to
+            facilitate development; but the integration with ExtJs has already been proved so
+            no issues are expected when integrating later on.
+        </li>
+
+        <li>
+            The shaded area in the background shows a "period of interest" -- only events
+            overlapping with that area are reported by the back-end. This period of interest
+            could be for example a particular experiment.
+        </li>
+
+        <li>The dialog for event creation/editing is customizable (can add more input elements,
+            for example), which might be useful depending on needed related information.
+        </li>
+    </ul>
+</div>
+
+<div>
+    <b>TODO and alignment with actual requirements</b>:
+
+    <ul>
+        <li>
+            The overall interaction with back-end including saving "draft" plans (with
+            no submission to T-REX just yet) and actual submission to T-REX; ...
+
+        </li>
+
+        <li>
+            user login
+        </li>
+
+        <li>
+            versioning?
+        </li>
+
+        <li>
+            ...
+        </li>
+
+        <li>
+            <b>some TODOs/nice-to-haves related with user interaction</b>:
+            <ul>
+                <li>
+                    Mark indicating unsaved changes and warning if user wants to leave the page
+                </li>
+
+                <li>
+                    Undo?
+                </li>
+
+                <li>
+                    ...
+                </li>
+
+            </ul>
+        </li>
+
+    </ul>
+</div>
+
+
+</body>

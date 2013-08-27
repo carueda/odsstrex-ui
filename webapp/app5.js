@@ -53,9 +53,9 @@ $(document).ready(function() {
         console.log("getting tick rate");
         pprogress("getting tick rate");
         $.ajax({
-            dataType: "json",
-            url: "tick/rate",
-            data: {},
+            url:        odsstrexConfig.rest + "/tick/rate",
+            dataType:   "json",
+            data:       {},
 
             success: function(res) {
                 success();
@@ -105,9 +105,9 @@ $(document).ready(function() {
 
     function refreshTimelines(req) {
         $.ajax({
-            dataType: "json",
-            url: "timelines",
-            data: req,
+            url:        odsstrexConfig.rest + "/timelines",
+            dataType:   "json",
+            data:       req,
 
             success: function(res) {
                 success();
@@ -153,9 +153,9 @@ $(document).ready(function() {
 //        console.log("getting tokens for " + timelineName);
         pprogress("getting tokens for " + timelineName);
         $.ajax({
-            dataType: "json",
-            url: "timeline/" + timelineName,
-            data: {},
+            url:         odsstrexConfig.rest + "/timeline/" + timelineName,
+            dataType:    "json",
+            data:        {},
 
             success: function(res) {
                 success();
@@ -219,9 +219,9 @@ $(document).ready(function() {
     $("#remove_pending").click(function() {
         pprogress("removing pending...");
         $.ajax({
-            url: "remove_pending",
-            data: {},
-            dataType: "text",
+            url:         odsstrexConfig.rest + "/remove_pending",
+            data:        {},
+            dataType:    "text",
             success: function(res) {
                 success();
                 console.log("remove_pending response: " + res);
@@ -237,9 +237,9 @@ $(document).ready(function() {
     $("#remove_draft").click(function() {
         pprogress("removing drafts..");
         $.ajax({
-            url: "remove_draft",
-            data: {},
-            dataType: "text",
+            url:         odsstrexConfig.rest + "/remove_draft",
+            data:        {},
+            dataType:    "text",
             success: function(res) {
                 success();
                 console.log("remove_draft reponse: " + res);
@@ -255,9 +255,9 @@ $(document).ready(function() {
     $("#removeAll").click(function() {
         pprogress("removing all...");
         $.ajax({
-            url: "remove_all",
-            data: {},
-            dataType: "text",
+            url:        odsstrexConfig.rest + "/remove_all",
+            data:       {},
+            dataType:   "text",
             success: function(res) {
                 success();
                 console.log("remove_all reponse: " + res);

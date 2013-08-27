@@ -1,24 +1,18 @@
 ODSS-TREX Planning Editor
 
-This is the service for the T-REX planning component in the ODSS
+This is a prototype UI for the T-REX planning functionality in the ODSS
 
-Preliminary; it is a prototype yet to be integrated into the main ODSS codebase.
+Preliminary; to be integrated into the main ODSS codebase.
 
+## dependency: ##
 
-index3.html: obsolete
+- [odsstrex-rest](https://github.com/carueda/odsstrex-rest) service running somewhere
 
-index4.html: a token is composed of 4 blocks: background, start, body, end
+## configure & run ##
 
-index4_1.html: refactoring of index4.html to separate timeline widget
-functionality
+- edit config.js to indicate the odsstrex-rest endpoint URL.
+Note that odsstrex-rest is
+[CORS](http://en.wikipedia.org/wiki/Cross-origin_resource_sharing)-enabled.
 
-index5.html:
-- a token is again only one block
-
-TODO:
-
-- make all tokens be fully formatted UTC, so add "Z" to the ones coming
-  from T-rex. ONLY convert to local for purposes of the base timeline widget.
-
-- code clean up!!
+- open webapp/index.html in your browser
 
