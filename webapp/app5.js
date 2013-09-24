@@ -75,7 +75,6 @@ $(document).ready(function() {
         perror();
         console.log("refreshing...");
         pprogress("refreshing...");
-        timelineWidget.timeline.setCustomTime(new Date());
         refreshTimelines({ /*pending req*/ });
     }
 
@@ -128,6 +127,7 @@ $(document).ready(function() {
         putTokens();
         drawTimelineWidget();
         setVisibleChartRange();
+        getNextTick();
     }
 
     function initTimelines(req, res) {
@@ -186,6 +186,37 @@ $(document).ready(function() {
         timelineWidget.draw();
     }
 
+    function getNextTick() {
+        pprogress("getting next tick ");
+        $.ajax({
+            url:         odsstrexConfig.rest + "/tick/next",
+            dataType:    "json",
+
+            success: function(res) {
+                success();
+                gotNextTick(res);
+            },
+
+            error: function (xhr, ajaxOptions, thrownError) {
+                perror("error: " + thrownError);
+            }
+        });
+    }
+
+    function gotNextTick(res) {
+        console.log("gotNextTick: " + JSON.stringify(res));
+
+        var nextTick = parseDate(res.date);
+        timelineWidget.timeline.setCustomTime(nextTick);
+
+        var timeout = nextTick.valueOf() - new Date().valueOf();
+        if (timeout > 0) {
+            setTimeout(function() {
+                autoRefresh = true;
+                refresh()
+            }, timeout);
+        }
+    }
 
     /////////////////////////////////////////////////////////////////////////
 
