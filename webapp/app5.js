@@ -97,9 +97,9 @@ $(document).ready(function() {
         if (now > limit) {
             // make current time go to the middle of the chart
             var half = len / 2;
-            start = new Date(now - half);
-            end   = new Date(start + len);
-            timelineWidget.setVisibleChartRange(start, end);
+            start = moment(now - half);
+            end   = moment(start + len);
+            timelineWidget.setVisibleChartRange(start.toDate(), end.toDate());
         }
     }
 
