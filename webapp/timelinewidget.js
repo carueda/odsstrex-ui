@@ -159,6 +159,12 @@ function TimelineWidget(container, tokenForm) {
          * associated to the new token.
          */
         var onAdd = function(event) {
+            if (odsstrexConfig.readonly) {
+                pstatus("Addition of new goals is disabled (widget in read-only mode)");
+                self.timeline.cancelAdd();
+                return;
+            }
+
             var row = getSelectedRow();
             var element = data[row];
             console.log("onAdd: row=" +row+ " element=" +JSON.stringify(element));
@@ -443,13 +449,40 @@ function TimelineWidget(container, tokenForm) {
             color = "yellow"; // should not happen
         }
         else {
-            tooltip = "";
+            tooltip = "<table>";
             for (var k in tml) {
-                tooltip += k + ": " +tml[k]+ " \n";
+                var v = tml[k];
+                tooltip += "<tr><td><b>" +k + "</b>:</td><td>" +v+ "</td></tr>";
             }
+            tooltip += "</table>";
             color = !tml.alive ? "red" : tml.accept_goals ? "green" : "black";
         }
         return "<div style='color: " +color+ "' title='" +tooltip+ "'>" + name + "</div>";
+    }
+
+    function getTokenTooltip(token) {
+        if (token === null || typeof token !== "object") {
+            return token;
+        }
+        var tooltip = '<table>';
+        for (key in token) {
+            (function(key) {
+                if (key !== "tid") {
+                    var val = getTokenTooltip(token[key]);
+                  //var val = JSON.stringify(token[k]);
+                    tooltip += '<tr><td><b>' +key+ '</b>:</td><td>' +val+ '</td></tr>';
+                }
+            })(key);
+        }
+        tooltip += '</table>';
+        return tooltip;
+    }
+
+    function getTokenContent(token) {
+        var tooltip = getTokenTooltip(token);
+        console.log("tootip = " + tooltip);
+        var content = "<div title='" +tooltip+ "'>" +token.text+ "</div>";
+        return content;
     }
 
     function pushBlock(token, index) {
@@ -463,7 +496,7 @@ function TimelineWidget(container, tokenForm) {
             'start':      parseDate(start),
             'end':        parseDate(end),
 
-            'content':    token.text,
+            'content':    getTokenContent(token),
             'group':      formattedGroup(token.section_id),
             'className':  token.status + " " + "block-body",
             'tokenInfo':  {'kind': 'body', 'index': index}

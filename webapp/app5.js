@@ -380,6 +380,15 @@ $(document).ready(function() {
         });
     }
 
+    // see http://stackoverflow.com/a/15734408/830737
+    $(function () {
+      $(document).tooltip({
+          content: function () {
+              return $(this).prop('title');
+          }
+      });
+    });
+
 });
 
 
