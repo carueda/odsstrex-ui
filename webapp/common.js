@@ -92,7 +92,7 @@ function pstatus(msg, autohide) {
         $("#status").text("");
     }
     else if (autohide == undefined || autohide == true) {
-        $("#status").text(msg)
+        $("#status").stop(true, true).text(msg)
             .fadeIn(0).delay(2000).fadeOut(1000);
     }
     else {
