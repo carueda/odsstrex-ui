@@ -103,9 +103,9 @@ div.timeline-event-range {
     cursor: pointer;
     border-radius: 0px;
     -moz-border-radius: 0px;  /* For Firefox 3.6 and older */
-}/*.timeline-event-range:hover {
+}.timeline-event-range:hover {
    box-shadow: 0 0 5px gray;
-}*/
+}
 
 div.timeline-event-range-drag-left {
     z-index: 100;
@@ -216,4 +216,8 @@ div.block-body {
   padding:1px 12px;
   text-decoration:none;
   text-shadow:1px 1px 0 #ffffff;
+}
+
+div.ui-tooltip {
+    max-width: 700px;
 }

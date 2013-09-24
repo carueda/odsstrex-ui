@@ -449,10 +449,17 @@ function TimelineWidget(container, tokenForm) {
             color = "yellow"; // should not happen
         }
         else {
-            tooltip = "<table>";
-            for (var k in tml) {
-                var v = tml[k];
-                tooltip += "<tr><td><b>" +k + "</b>:</td><td>" +v+ "</td></tr>";
+            tooltip = "Timeline: <b>" + tml.name + "</b>";
+            tooltip += "<br/><br/>";
+            tooltip += "<table>";
+            for (var key in tml) {
+                (function(key) {
+                    if (key === "name") {
+                        return;
+                    }
+                    var v = tml[key];
+                    tooltip += "<tr><td><b>" +key + "</b>:</td><td>" +v+ "</td></tr>";
+                })(key);
             }
             tooltip += "</table>";
             color = !tml.alive ? "red" : tml.accept_goals ? "green" : "black";
@@ -467,11 +474,17 @@ function TimelineWidget(container, tokenForm) {
         var tooltip = '<table>';
         for (key in token) {
             (function(key) {
-                if (key !== "tid") {
-                    var val = getTokenTooltip(token[key]);
-                  //var val = JSON.stringify(token[k]);
-                    tooltip += '<tr><td><b>' +key+ '</b>:</td><td>' +val+ '</td></tr>';
+                if (key === "tid" || key === "section_id" || key === "text"
+                        || key === "status") {
+                    return;
                 }
+                var val = getTokenTooltip(token[key]);
+              //var val = JSON.stringify(token[key]);
+                tooltip += '<tr' +
+                        '><td style="vertical-align:middle"' +
+                        '><b>' +key+ '</b>:</td>' +
+                        '<td style="vertical-align:top; border:1pt solid #d9d9d9"' +
+                        '>' +val+ '</td></tr>';
             })(key);
         }
         tooltip += '</table>';
@@ -479,8 +492,10 @@ function TimelineWidget(container, tokenForm) {
     }
 
     function getTokenContent(token) {
-        var tooltip = getTokenTooltip(token);
-        console.log("tootip = " + tooltip);
+        var tooltip = "Token predicate: <b>" + token.text + "</b> " +
+                "on timeline: <b>" + token.section_id + "</b>";
+        tooltip += "<br/><br/>" + getTokenTooltip(token);
+        //console.log("tootip = " + tooltip);
         var content = "<div title='" +tooltip+ "'>" +token.text+ "</div>";
         return content;
     }
