@@ -468,27 +468,19 @@ function TimelineWidget(container, tokenForm) {
     }
 
     function getTokenTooltip(token) {
-        if (token === null || typeof token !== "object") {
-            return token;
+        var dic = {
+            start:   token.start,
+            end:     token.end,
+            duration:     token.duration
+        };
+        for (var ii = 0, ll = token.vars.length; ii < ll; ii++) {
+            var variable = token.vars[ii];
+            var name = variable.name;
+            if (name) {
+                dic[name] = variable;
+            }
         }
-        var tooltip = '<table>';
-        for (key in token) {
-            (function(key) {
-                if (key === "tid" || key === "section_id" || key === "text"
-                        || key === "status") {
-                    return;
-                }
-                var val = getTokenTooltip(token[key]);
-              //var val = JSON.stringify(token[key]);
-                tooltip += '<tr' +
-                        '><td style="vertical-align:middle"' +
-                        '><b>' +key+ '</b>:</td>' +
-                        '<td style="vertical-align:top; border:1pt solid #d9d9d9"' +
-                        '>' +val+ '</td></tr>';
-            })(key);
-        }
-        tooltip += '</table>';
-        return tooltip;
+        return tablify(dic);
     }
 
     function getTokenContent(token) {
