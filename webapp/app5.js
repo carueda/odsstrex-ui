@@ -172,7 +172,7 @@ $(document).ready(function() {
         if (tokens.length == 0) {
             return;
         }
-        console.log("got tokens for " + timelineName + ":");
+        console.log("got tokens for " + timelineName);
 
         for (var i = 0; i < tokens.length; i++) {
             var token = tokens[i];

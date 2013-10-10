@@ -91,58 +91,10 @@ function TimelineWidget(container, tokenForm) {
     };
 
     this.addToken = function(token) {
-
-        console.log("addToken: " + JSON.stringify(token));
-
-//        var early_start, late_start;
-//        if (token.start.value) {
-//            early_start = token.start.value;
-//            late_start  = token.start.value;
-//        }
-//        else if (token.start.min) {
-//            early_start = token.start.min;
-//            late_start  = token.start.max || early_start;
-//        }
-//        else {
-//            late_start  = token.start.max;
-//            early_start = late_start;
-//        }
-//
-//        var early_end, late_end;
-//        if (token.end.value) {
-//            early_end = token.end.value;
-//            late_end  = token.end.value;
-//        }
-//        else if (token.end.min) {
-//            early_end = token.end.min;
-//            late_end  = token.end.max || early_end;
-//        }
-//        else {
-//            late_end  = token.end.max;
-//            early_end = late_start;
-//        }
-//
-//        var tokenInfo = new TokenInfo({
-//            'early_start' : parseDate(early_start),
-//            'late_start'  : parseDate(late_start),
-//
-//            'early_end'   : parseDate(early_end),
-//            'late_end'    : parseDate(late_end),
-//
-//            'content'     : token.text,
-//            'group'       : token.section_id,
-//            'status'      : token.status,
-//            'tid'         : token.tid
-//        });
-
-
-        var tokenInfo = token;
-
-        console.log("tokenInfo: " + JSON.stringify(tokenInfo));
-
+        //console.log("addToken: " + JSON.stringify(token));
         var index = tokenInfos.length;
-        tokenInfos.push(tokenInfo);
-        pushBlock(tokenInfo, index);
+        tokenInfos.push(token);
+        pushBlock(token, index);
         prepareHover();
     };
 
@@ -167,7 +119,7 @@ function TimelineWidget(container, tokenForm) {
 
             var row = getSelectedRow();
             var element = data[row];
-            console.log("onAdd: row=" +row+ " element=" +JSON.stringify(element));
+            //console.log("onAdd: row=" +row+ " element=" +JSON.stringify(element));
 
             var now = new Date();
             if (element.start < now) {
@@ -219,7 +171,9 @@ function TimelineWidget(container, tokenForm) {
                     },
 
                     'text'         : "Track",   //element.content,
-                    'section_id'   : element.group
+                    'section_id'   : element.group,
+
+                    'vars' : []
                 });
 
                 console.log("adding token " + JSON.stringify(tokenInfo));
@@ -291,7 +245,7 @@ function TimelineWidget(container, tokenForm) {
             var kind  = element.tokenInfo.kind;
             var tokenInfo = tokenInfos[index];
 
-            console.log("tokenInfo: " + JSON.stringify(tokenInfo));
+            //console.log("tokenInfo: " + JSON.stringify(tokenInfo));
 
             if (tokenInfo.status === "status_accepted") {
                 cancelChange(index, tokenInfo, "Accepted token cannot be changed");
@@ -300,7 +254,7 @@ function TimelineWidget(container, tokenForm) {
 
             var bodyBlock  = data[index];
 
-            console.log("bodyBlock:  " + JSON.stringify(bodyBlock));
+            //console.log("bodyBlock:  " + JSON.stringify(bodyBlock));
 
             var now = new Date();
 
@@ -333,7 +287,7 @@ function TimelineWidget(container, tokenForm) {
         bodyBlock .className = "block-body"  + " " + status;
 
         self.timeline.redraw();
-    }
+    };
 
     function updateStatusModified(index, tokenInfo) {
         if (tokenInfo.status === "status_new") {

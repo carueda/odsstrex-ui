@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
-    <title>odss planning component -- experimental</title>
+    <title>T-REX Front-end prototype</title>
 
     <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
     <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js' charset="utf-8"></script>
@@ -49,16 +49,22 @@
 
 <body>
 
-<div style="width:100%; text-align:center">
-    <button class="graybutton" id="refresh"
-            title="manually refresh the timelines (the refresh is automatic
-            at each 'tick' reported by the T-REX backend)">Refresh</button>
-    <!--<button class="graybutton" id="save_draft_goals">Save</button>-->
-    <!--<button class="graybutton" id="submitGoals">Submit</button>-->
-    <!--<button class="graybutton" id="remove_draft">Remove drafts</button>-->
-    <!--<button class="graybutton" id="remove_pending">Remove pending</button>-->
-    <!--<button class="graybutton">Publish</button>-->
-</div>
+<table style="width:100%">
+    <tr>
+        <td>
+            <span style="font-weight: bold; text-align: left">T-REX Front-end prototype</span>
+        </td>
+        <td style="text-align:right">
+            <button class="graybutton" id="refresh"
+                    title="manually refresh the timelines (the refresh is automatic
+                    at each 'tick' reported by the T-REX backend)">Refresh</button>
+            <!--<button class="graybutton" id="save_draft_goals">Save</button>-->
+            <!--<button class="graybutton" id="submitGoals">Submit</button>-->
+            <!--<button class="graybutton" id="remove_draft">Remove drafts</button>-->
+            <!--<button class="graybutton" id="remove_pending">Remove pending</button>-->
+        </td>
+    </tr>
+</table>
 
 <div id="timelines"></div>
 
